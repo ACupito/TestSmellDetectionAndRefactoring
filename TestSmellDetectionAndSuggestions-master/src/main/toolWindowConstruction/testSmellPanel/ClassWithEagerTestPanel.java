@@ -2,6 +2,7 @@ package main.toolWindowConstruction.testSmellPanel;
 
 import com.intellij.openapi.application.ApplicationManager;
 import com.intellij.openapi.project.Project;
+import com.intellij.refactoring.extractMethod.PrepareFailedException;
 import it.unisa.testSmellDiffusion.beans.MethodBean;
 import it.unisa.testSmellDiffusion.testSmellInfo.eagerTest.EagerTestInfo;
 import it.unisa.testSmellDiffusion.testSmellInfo.eagerTest.MethodWithEagerTest;
@@ -93,7 +94,11 @@ public class ClassWithEagerTestPanel extends JPanel {
                 public void actionPerformed(ActionEvent e) {
 
                     IRefactor refactor = new EagerTestStrategy(mb, project, eti);
-                    refactor.doRefactor();
+                    try {
+                        refactor.doRefactor();
+                    } catch (PrepareFailedException e1) {
+                        e1.printStackTrace();
+                    }
                 }
             });
 

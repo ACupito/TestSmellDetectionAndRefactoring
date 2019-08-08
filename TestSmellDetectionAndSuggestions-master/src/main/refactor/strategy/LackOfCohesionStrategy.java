@@ -37,14 +37,14 @@ public class LackOfCohesionStrategy implements IRefactor {
         ClassBean originalClass = informations.getTestClass();
         PsiClass psiOriginalClass = PsiUtil.getPsi(originalClass, project);
         String packageName = originalClass.getBelongingPackage();
-
+/*
         PackageBean packageBean = new PackageBean();
         packageBean.setName(packageName);
         packageBean.addClass(originalClass);
         Vector<PackageBean> packs = new Vector<>();
-        packs.add(packageBean);
+        packs.add(packageBean);*/
 
-        informations.checkMethodsThatCauseLackOfCohesion(packs); //PROBLEMINO DA SEGNALARE
+        //informations.checkMethodsThatCauseLackOfCohesion(packs); //PROBLEMINO DA SEGNALARE
         ArrayList<MethodBean> infectedMethodList = informations.getMethodsThatCauseLackOfCohesion(); //sempre vuoto capire il perchè
 
         if(infectedMethodList.size() > 0) {

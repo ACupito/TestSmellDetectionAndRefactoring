@@ -60,6 +60,7 @@ public class StructuralDetector implements IDetector {
         //Parte relativa a EagerTest
         System.out.println("\nDETECTOR: inizio a cercare per LackOfCohesion: ");
         ArrayList<LackOfCohesionInfo> classesWithLackOfCohesion = tsm.checkLackOfCohesion(pFolderPath);
+
         return classesWithLackOfCohesion;
     }
 }

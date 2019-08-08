@@ -1,6 +1,7 @@
 package main.toolWindowConstruction.testSmellPanel;
 
 import com.intellij.openapi.project.Project;
+import com.intellij.refactoring.extractMethod.PrepareFailedException;
 import it.unisa.testSmellDiffusion.beans.MethodBean;
 import it.unisa.testSmellDiffusion.testSmellInfo.lackOfCohesion.LackOfCohesionInfo;
 import main.refactor.IRefactor;
@@ -58,7 +59,11 @@ public class ClassWithLackOfCohesionPanel extends JPanel {
             public void actionPerformed(ActionEvent e) {
 
                 IRefactor refactor = new LackOfCohesionStrategy(loci, project);
-                refactor.doRefactor();
+                try {
+                    refactor.doRefactor();
+                } catch (PrepareFailedException e1) {
+                    e1.printStackTrace();
+                }
             }
         });
         this.setLayout(new GridLayout(1,3));

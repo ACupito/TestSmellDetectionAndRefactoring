@@ -1,6 +1,7 @@
 package main.toolWindowConstruction.testSmellPanel;
 
 import com.intellij.openapi.project.Project;
+import com.intellij.refactoring.extractMethod.PrepareFailedException;
 import it.unisa.testSmellDiffusion.beans.InstanceVariableBean;
 import it.unisa.testSmellDiffusion.testSmellInfo.generalFixture.GeneralFixtureInfo;
 import it.unisa.testSmellDiffusion.testSmellInfo.generalFixture.MethodWithGeneralFixture;
@@ -93,7 +94,11 @@ public class ClassWithGeneralFixturePanel extends JPanel {
                 public void actionPerformed(ActionEvent e) {
 
                     IRefactor refactor = new GeneralFixtureStrategy(mb, project, gfi);
-                    refactor.doRefactor();
+                    try {
+                        refactor.doRefactor();
+                    } catch (PrepareFailedException e1) {
+                        e1.printStackTrace();
+                    }
                 }
             });
 
