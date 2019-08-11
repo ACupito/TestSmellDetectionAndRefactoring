@@ -1,9 +1,13 @@
 package main.refactor.strategy;
 
+import com.intellij.openapi.command.WriteCommandAction;
+import com.intellij.openapi.editor.Editor;
+import com.intellij.openapi.fileEditor.FileEditorManager;
 import com.intellij.openapi.project.Project;
-import com.intellij.psi.PsiClass;
-import com.intellij.psi.PsiField;
-import com.intellij.psi.PsiMethod;
+import com.intellij.psi.*;
+import com.intellij.refactoring.extractMethod.ExtractMethodHandler;
+import com.intellij.refactoring.extractMethod.ExtractMethodProcessor;
+import com.intellij.refactoring.extractMethod.PrepareFailedException;
 import com.intellij.refactoring.extractclass.ExtractClassProcessor;
 import it.unisa.testSmellDiffusion.beans.ClassBean;
 import it.unisa.testSmellDiffusion.beans.InstanceVariableBean;
@@ -13,21 +17,20 @@ import it.unisa.testSmellDiffusion.testSmellInfo.lackOfCohesion.LackOfCohesionIn
 import main.refactor.IRefactor;
 import org.jsoup.Connection;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Vector;
+import java.util.*;
 
 public class LackOfCohesionStrategy implements IRefactor {
     private Project project;
     private LackOfCohesionInfo informations;
+    private Editor editor;
 
-    public LackOfCohesionStrategy(LackOfCohesionInfo informations, Project project){
+    public LackOfCohesionStrategy(LackOfCohesionInfo informations, Project project) {
         this.informations = informations;
         this.project = project;
     }
 
     @Override
-    public void doRefactor() {
+    public void doRefactor() throws PrepareFailedException {
         ExtractClassProcessor processor;
 
         List<PsiMethod> methodsToMove = new ArrayList<>();
@@ -47,7 +50,7 @@ public class LackOfCohesionStrategy implements IRefactor {
         //informations.checkMethodsThatCauseLackOfCohesion(packs); //PROBLEMINO DA SEGNALARE
         ArrayList<MethodBean> infectedMethodList = informations.getMethodsThatCauseLackOfCohesion(); //sempre vuoto capire il perchè
 
-        if(infectedMethodList.size() > 0) {
+        if (infectedMethodList.size() > 0) {
 
             for (MethodBean infect : infectedMethodList) {
 
@@ -61,22 +64,98 @@ public class LackOfCohesionStrategy implements IRefactor {
                     }
                 }
             }
-
         }
-        for(PsiClass innerClass: psiOriginalClass.getInnerClasses()){
-            innerClasses.add(innerClass);
+        Collection<MethodBean> allMethods = informations.getTestClass().getMethods();
+        MethodBean setup = null;
+        for (MethodBean metodo : allMethods) {
+            PsiMethod metodo2 = PsiUtil.getPsi(metodo, project, psiOriginalClass);
+
+            Vector<InstanceVariableBean> instances = (Vector<InstanceVariableBean>) metodo.getUsedInstanceVariables();
+            //Iterator<InstanceVariableBean> cycler = metodo.getUsedInstanceVariables().iterator();
+
+            boolean check = true;
+            /*while(cycler.hasNext()){
+                InstanceVariableBean variableBean = cycler.next();*/
+            if (!methodsToMove.contains(metodo2) && infectedMethodList.contains(metodo2)) {
+                /*if(!instances.contains(variableBean)) {
+                    check = false;
+                    break;
+                }*/
+                if (/*check && */!metodo.getName().equals("setUp") /*&& !methodsToMove.contains(metodo2)*/) {
+                    methodsToMove.add(metodo2);
+                } else if (metodo.getName().equals("setUp")) {
+                    setup = metodo;
+                }
+            }
         }
+        PsiMethod psiSetup = PsiUtil.getPsi(setup, project, psiOriginalClass);
+        int k = 0;
+        ArrayList<PsiElement> elementsToMoveTemp = new ArrayList<>();
 
-        String classShortName = "Refactored"+originalClass.getName();
+        for (MethodBean metodo : allMethods) {
 
-        processor = new ExtractClassProcessor(
-                psiOriginalClass,
-                fieldsToMove,
-                methodsToMove,
-                innerClasses,
-                packageName,
-                classShortName);
+            Vector<InstanceVariableBean> instances = (Vector<InstanceVariableBean>) metodo.getUsedInstanceVariables();
 
-        processor.run();
+            for (int j = 0; j < psiSetup.getBody().getStatements().length; j++) {
+                PsiElement statement = psiSetup.getBody().getStatements()[j].getFirstChild();
+
+                if (statement instanceof PsiAssignmentExpression) {
+                    PsiElement element = ((PsiAssignmentExpression) statement).getLExpression();
+
+                    for (int i = 0; i < instances.size(); i++) {
+
+                        if (element.getText().equals(instances.get(i).getName())) {
+                            elementsToMoveTemp.add(element);
+                        }
+                    }
+                }
+            }
+        }
+        PsiElement[] elementsToMove = elementsToMoveTemp.toArray(new PsiElement[elementsToMoveTemp.size()]);
+        editor = FileEditorManager.getInstance(project).getSelectedTextEditor();
+
+        ExtractMethodProcessor methodProcessor = new ExtractMethodProcessor(project, editor, elementsToMove, null, "setUpRefactored", "setUp", null);
+
+        if (methodProcessor.prepare()) {
+            methodProcessor.testPrepare();
+            methodProcessor.testNullability();
+
+            ExtractMethodHandler.extractMethod(project, methodProcessor);
+            for (PsiClass innerClass : psiOriginalClass.getInnerClasses()) {
+                innerClasses.add(innerClass);
+            }
+            //Creo l'annotation "Before" da aggiungere al metodo appena estratto
+            PsiAnnotation annotation = JavaPsiFacade.getElementFactory(project).createAnnotationFromText("@Before",methodProcessor.getExtractedMethod().getContext());
+
+            //Aggiungo l'annotation creata al metodo
+            WriteCommandAction.runWriteCommandAction(project, () -> {
+                psiOriginalClass.addBefore(annotation, methodProcessor.getExtractedMethod());
+            });
+
+            methodsToMove.add(methodProcessor.getExtractedMethod());
+
+            //Utile per cancellare la chiamata al nuovo metodo creato
+            WriteCommandAction.runWriteCommandAction(project, () -> {
+                PsiStatement[] statements = psiSetup.getBody().getStatements();
+                for(PsiStatement statement : statements){
+                    System.out.println(statement.getText());
+                    if(statement.getText().equals("setUp();")){
+                        statement.delete();
+                    }
+                }
+            });
+
+            String classShortName = "Refactored" + originalClass.getName();
+
+            processor = new ExtractClassProcessor(
+                    psiOriginalClass,
+                    fieldsToMove,
+                    methodsToMove,
+                    innerClasses,
+                    packageName,
+                    classShortName);
+
+            processor.run();
+        }
     }
 }
