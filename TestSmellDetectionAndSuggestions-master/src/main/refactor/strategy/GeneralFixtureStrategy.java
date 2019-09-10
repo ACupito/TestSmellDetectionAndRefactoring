@@ -14,6 +14,7 @@ import it.unisa.testSmellDiffusion.beans.InstanceVariableBean;
 import it.unisa.testSmellDiffusion.beans.MethodBean;
 import it.unisa.testSmellDiffusion.testSmellInfo.generalFixture.GeneralFixtureInfo;
 import it.unisa.testSmellDiffusion.testSmellInfo.generalFixture.MethodWithGeneralFixture;
+import it.unisa.testSmellDiffusion.utility.TestSmellUtilities;
 import main.refactor.IRefactor;
 
 import java.util.*;
@@ -77,6 +78,7 @@ public class GeneralFixtureStrategy implements IRefactor {
                 }
             }
         }
+
         if(setup != null) {
             PsiMethod psiSetup = PsiUtil.getPsi(setup, project, psiOriginalClass);
             int k = 0;
@@ -119,14 +121,13 @@ public class GeneralFixtureStrategy implements IRefactor {
                 PsiStatement[] statements = psiSetup.getBody().getStatements();
                 String methodName = methodProcessor.getExtractedMethod().getName() +"();";
                 for (PsiStatement statement : statements) {
-                    System.out.println(statement.getText());
                     if (statement.getText().equals(methodName)) {
                         statement.delete();
                     }
                 }
             });
         }
-        String classShortName = "Refactored" + originalClass.getName();
+        String classShortName = originalClass.getName() + "s";
 
         processor = new ExtractClassProcessor(
                 psiOriginalClass,

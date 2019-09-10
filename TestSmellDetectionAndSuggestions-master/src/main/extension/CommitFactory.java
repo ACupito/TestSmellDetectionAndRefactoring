@@ -1,7 +1,10 @@
 package main.extension;
 
+import com.intellij.openapi.vcs.CheckinProjectPanel;
+import com.intellij.openapi.vcs.changes.CommitContext;
+import com.intellij.openapi.vcs.checkin.CheckinHandler;
+import com.intellij.openapi.vcs.checkin.CheckinHandlerFactory;
 import it.unisa.testSmellDiffusion.beans.ClassBean;
-
 import it.unisa.testSmellDiffusion.testSmellInfo.eagerTest.EagerTestInfo;
 import it.unisa.testSmellDiffusion.testSmellInfo.generalFixture.GeneralFixtureInfo;
 import it.unisa.testSmellDiffusion.testSmellInfo.lackOfCohesion.LackOfCohesionInfo;
@@ -10,10 +13,6 @@ import main.testSmellDetection.IDetector;
 import main.testSmellDetection.detector.StructuralDetector;
 import main.testSmellDetection.detector.TextualDetector;
 import main.toolWindowConstruction.TestSmellWindowFactory;
-import com.intellij.openapi.vcs.CheckinProjectPanel;
-import com.intellij.openapi.vcs.changes.CommitContext;
-import com.intellij.openapi.vcs.checkin.CheckinHandler;
-import com.intellij.openapi.vcs.checkin.CheckinHandlerFactory;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;

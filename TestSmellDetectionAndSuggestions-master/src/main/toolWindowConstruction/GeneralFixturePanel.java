@@ -2,7 +2,6 @@ package main.toolWindowConstruction;
 
 import com.intellij.openapi.project.Project;
 import it.unisa.testSmellDiffusion.testSmellInfo.generalFixture.GeneralFixtureInfo;
-import javafx.stage.Screen;
 import main.toolWindowConstruction.testSmellPanel.ClassWithGeneralFixturePanel;
 
 import javax.swing.*;

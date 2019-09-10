@@ -1,12 +1,13 @@
 package main.toolWindowConstruction.testSmellPanel;
 
 import com.intellij.openapi.project.Project;
+import com.intellij.openapi.wm.ToolWindow;
+import com.intellij.openapi.wm.ToolWindowManager;
 import com.intellij.refactoring.extractMethod.PrepareFailedException;
 import it.unisa.testSmellDiffusion.beans.InstanceVariableBean;
 import it.unisa.testSmellDiffusion.testSmellInfo.generalFixture.GeneralFixtureInfo;
 import it.unisa.testSmellDiffusion.testSmellInfo.generalFixture.MethodWithGeneralFixture;
 import main.refactor.IRefactor;
-import main.refactor.strategy.EagerTestStrategy;
 import main.refactor.strategy.GeneralFixtureStrategy;
 
 import javax.swing.*;
@@ -96,6 +97,8 @@ public class ClassWithGeneralFixturePanel extends JPanel {
                     IRefactor refactor = new GeneralFixtureStrategy(mb, project, gfi);
                     try {
                         refactor.doRefactor();
+                        ToolWindow toolWindow = ToolWindowManager.getActiveToolWindow();
+                        toolWindow.hide(null);
                     } catch (PrepareFailedException e1) {
                         e1.printStackTrace();
                     }

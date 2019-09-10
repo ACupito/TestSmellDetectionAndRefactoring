@@ -1,24 +1,22 @@
 package main.toolWindowConstruction.testSmellPanel;
 
-import com.intellij.openapi.application.ApplicationManager;
 import com.intellij.openapi.project.Project;
+import com.intellij.openapi.wm.ToolWindow;
+import com.intellij.openapi.wm.ToolWindowManager;
 import com.intellij.refactoring.extractMethod.PrepareFailedException;
+import com.intellij.ui.content.ContentManager;
 import it.unisa.testSmellDiffusion.beans.MethodBean;
 import it.unisa.testSmellDiffusion.testSmellInfo.eagerTest.EagerTestInfo;
 import it.unisa.testSmellDiffusion.testSmellInfo.eagerTest.MethodWithEagerTest;
-import it.unisa.testSmellDiffusion.testSmellInfo.generalFixture.GeneralFixtureInfo;
 import main.refactor.IRefactor;
 import main.refactor.strategy.EagerTestStrategy;
-import main.testSmellDetection.IDetector;
-import main.testSmellDetection.detector.StructuralDetector;
-import org.jvnet.ws.wadl.Application;
+import main.toolWindowConstruction.TestSmellWindowFactory;
 
 import javax.swing.*;
 import javax.swing.border.Border;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.util.ArrayList;
 
 /**
  * Questa classe rappresenta la GUI nella quale vengono mostrate le informazioni riguardanti una classe affetta da EagerTest
@@ -96,6 +94,8 @@ public class ClassWithEagerTestPanel extends JPanel {
                     IRefactor refactor = new EagerTestStrategy(mb, project, eti);
                     try {
                         refactor.doRefactor();
+                        ToolWindow toolWindow = ToolWindowManager.getActiveToolWindow();
+                        toolWindow.hide(null);
                     } catch (PrepareFailedException e1) {
                         e1.printStackTrace();
                     }

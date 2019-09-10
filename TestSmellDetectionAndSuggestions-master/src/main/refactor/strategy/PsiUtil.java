@@ -1,14 +1,12 @@
 package main.refactor.strategy;
 
-import com.intellij.openapi.application.ApplicationManager;
 import com.intellij.openapi.project.Project;
 import com.intellij.psi.JavaPsiFacade;
 import com.intellij.psi.PsiClass;
 import com.intellij.psi.PsiMethod;
 import com.intellij.psi.search.GlobalSearchScope;
-import it.unisa.testSmellDiffusion.beans.MethodBean;
 import it.unisa.testSmellDiffusion.beans.ClassBean;
-import it.unisa.testSmellDiffusion.testSmellInfo.eagerTest.MethodWithEagerTest;
+import it.unisa.testSmellDiffusion.beans.MethodBean;
 
 public class PsiUtil {
 

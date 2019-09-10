@@ -64,7 +64,6 @@ public class EagerTestStrategy implements IRefactor {
 
                         //verifico che l'array è vuoto
                         if (isEmpty) {
-                            //elementsToMoveTemp[0] = classPsi.getAllMethods()[i].getBody().getStatements()[j];
                             elementsToMoveTemp.add(classPsi.getAllMethods()[i].getBody().getStatements()[j]); //inserisco il primo statement da spostare
                             isEmpty = false; //setto al false in seguito al riempimento
                         } else {

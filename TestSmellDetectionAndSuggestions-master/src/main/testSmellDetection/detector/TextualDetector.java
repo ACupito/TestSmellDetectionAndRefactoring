@@ -1,6 +1,5 @@
 package main.testSmellDetection.detector;
 
-import com.intellij.psi.PsiClass;
 import it.unisa.testSmellDiffusion.beans.ClassBean;
 import it.unisa.testSmellDiffusion.beans.InstanceVariableBean;
 import it.unisa.testSmellDiffusion.beans.MethodBean;
@@ -10,7 +9,6 @@ import it.unisa.testSmellDiffusion.testSmellInfo.eagerTest.MethodWithEagerTest;
 import it.unisa.testSmellDiffusion.testSmellInfo.generalFixture.GeneralFixtureInfo;
 import it.unisa.testSmellDiffusion.testSmellInfo.generalFixture.MethodWithGeneralFixture;
 import it.unisa.testSmellDiffusion.testSmellInfo.lackOfCohesion.LackOfCohesionInfo;
-import it.unisa.testSmellDiffusion.testSmellRules.EagerTest;
 import it.unisa.testSmellDiffusion.utility.TestSmellUtilities;
 import main.testSmellDetection.IDetector;
 import org.jetbrains.annotations.NotNull;
